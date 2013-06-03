@@ -136,7 +136,7 @@ class AsseticNode extends \Twig_Node
     {
         if (!$vars = $asset->getVars()) {
             // Ez korábban getTargetPath() volt, de akkor developerben hívva mindenképpen fordított fájlokat akart használni.
-            $compiler->repr($asset->getSourcePath());
+            $compiler->repr((strlen($asset->getSourcePath()) > 3) ? $asset->getSourcePath() : $asset->getTargetPath());
 
             return;
         }
