@@ -135,7 +135,8 @@ class AsseticNode extends \Twig_Node
     protected function compileAssetUrl(\Twig_Compiler $compiler, AssetInterface $asset, $name)
     {
         if (!$vars = $asset->getVars()) {
-            $compiler->repr($asset->getTargetPath());
+            // Ez korábban getTargetPath() volt, de akkor developerben hívva mindenképpen fordított fájlokat akart használni.
+            $compiler->repr($asset->getSourcePath());
 
             return;
         }
