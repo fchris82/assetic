@@ -115,18 +115,15 @@ class SassFilter extends BaseProcessFilter implements DependencyExtractorInterfa
 
         $pb = $this->createProcessBuilder($sassProcessArgs);
 
-        $root = $asset->getSourceRoot();
-        $path = $asset->getSourcePath();
-
-        if ($root && $path) {
-            $pb->add('--load-path')->add(dirname($root.'/'.$path));
+        if ($dir = $asset->getSourceDirectory()) {
+            $pb->add('--load-path')->add($dir);
         }
 
         if ($this->unixNewlines) {
             $pb->add('--unix-newlines');
         }
 
-        if (true === $this->scss || (null === $this->scss && 'scss' == pathinfo($path, PATHINFO_EXTENSION))) {
+        if (true === $this->scss || (null === $this->scss && 'scss' == pathinfo($asset->getSourcePath(), PATHINFO_EXTENSION))) {
             $pb->add('--scss');
         }
 
@@ -204,14 +201,14 @@ class SassFilter extends BaseProcessFilter implements DependencyExtractorInterfa
             if (pathinfo($reference, PATHINFO_EXTENSION)) {
                 $needles = array(
                     $reference,
-                    '_'.$reference,
+                    self::partialize($reference),
                 );
             } else {
                 $needles = array(
                     $reference.'.scss',
                     $reference.'.sass',
-                    '_'.$reference.'.scss',
-                    '_'.$reference.'.sass',
+                    self::partialize($reference).'.scss',
+                    self::partialize($reference).'.sass',
                 );
             }
 
@@ -232,5 +229,22 @@ class SassFilter extends BaseProcessFilter implements DependencyExtractorInterfa
         }
 
         return $children;
+    }
+
+    private static function partialize($reference)
+    {
+        $parts = pathinfo($reference);
+
+        if ('.' === $parts['dirname']) {
+            $partial = '_'.$parts['filename'];
+        } else {
+            $partial = $parts['dirname'].DIRECTORY_SEPARATOR.'_'.$parts['filename'];
+        }
+
+        if (isset($parts['extension'])) {
+            $partial .= '.'.$parts['extension'];
+        }
+
+        return $partial;
     }
 }
