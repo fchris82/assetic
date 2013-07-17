@@ -128,6 +128,7 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     public function clearFilters()
     {
         $this->filters->clear();
+        $this->clones = new \SplObjectStorage();
     }
 
     public function load(FilterInterface $additionalFilter = null)
@@ -169,6 +170,10 @@ class AssetCollection implements \IteratorAggregate, AssetCollectionInterface
     }
 
     public function getSourcePath()
+    {
+    }
+
+    public function getSourceDirectory()
     {
     }
 

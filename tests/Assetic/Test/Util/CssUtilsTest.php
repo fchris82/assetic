@@ -15,6 +15,18 @@ use Assetic\Util\CssUtils;
 
 class CssUtilsTest extends \PHPUnit_Framework_TestCase
 {
+    public function testFilterUrls()
+    {
+        $content = 'body { background: url(../images/bg.gif); }';
+
+        $matches = array();
+        $actual = CssUtils::filterUrls($content, function($match) use(& $matches) {
+            $matches[] = $match['url'];
+        });
+
+        $this->assertEquals(array('../images/bg.gif'), $matches);
+    }
+
     public function testExtractImports()
     {
         // These don't work yet (todo):
@@ -33,5 +45,19 @@ CSS;
 
         $this->assertEquals($expected, array_intersect($expected, $actual), '::extractImports() returns all expected URLs');
         $this->assertEquals(array(), array_diff($actual, $expected), '::extractImports() does not return unexpected URLs');
+    }
+
+    public function testFilterCommentless()
+    {
+        $content = 'A/*B*/C/*D*/E';
+
+        $filtered = '';
+        $result = CssUtils::filterCommentless($content, function($part) use(& $filtered) {
+            $filtered .= $part;
+            return $part;
+        });
+
+        $this->assertEquals('ACE', $filtered);
+        $this->assertEquals($content, $result);
     }
 }
