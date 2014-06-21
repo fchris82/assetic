@@ -12,17 +12,17 @@
 namespace Assetic\Test\Filter;
 
 use Assetic\Asset\FileAsset;
-use Assetic\Filter\JSMinFilter;
+use Assetic\Filter\JSqueezeFilter;
 
 /**
  * @group integration
  */
-class JSMinFilterTest extends \PHPUnit_Framework_TestCase
+class JSqueezeFilterTest extends \PHPUnit_Framework_TestCase
 {
     protected function setUp()
     {
-        if (!class_exists('JSMin')) {
-            $this->markTestSkipped('JSMin is not installed.');
+        if (!class_exists('JSqueeze')) {
+            $this->markTestSkipped('JSqueeze is not installed.');
         }
     }
 
@@ -31,9 +31,9 @@ class JSMinFilterTest extends \PHPUnit_Framework_TestCase
         $asset = new FileAsset(__DIR__.'/fixtures/jsmin/js.js');
         $asset->load();
 
-        $filter = new JSMinFilter();
+        $filter = new JSqueezeFilter();
         $filter->filterDump($asset);
 
-        $this->assertEquals('var a="abc";;;var bbb="u";', $asset->getContent());
+        $this->assertEquals(";var a='abc',bbb='u';", $asset->getContent());
     }
 }
